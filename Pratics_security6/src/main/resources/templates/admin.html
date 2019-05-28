@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<meta name="_csrf" th:content="${_csrf.token}"/>
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+</head>
+<body>
+
+	<h1>Admin</h1>
+	
+	<a href="/mylogout">logout</a>
+	
+	<form action="/mylogout" method="post">
+		<input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+		<input type="submit" value="logout">
+	</form>
+	
+	
+	
+	<a href="/getData1">getData1</a>
+	
+	<form onsubmit="fun()">
+		<input type="submit" value="submit"/>
+	</form>
+	
+	<button onclick="fun()">click</button>
+	
+	
+	<form action="/getData2" method="POST">
+		<input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+		<input type="submit" value="submit"/>
+	</form>
+	
+	<h1 id="output"></h1>
+	
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+<script>
+
+var token = $("meta[name='_csrf']").attr("content");
+var header = $("meta[name='_csrf_header']").attr("content");
+
+document.cookie="token" + "=" + token;
+document.cookie="header" + "=" + header;
+
+var mytoken = getCookie("token");
+//alert(mytoken);
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) === ' ')
+            c = c.substring(1);
+        if (c.indexOf(name) === 0)
+            return c.substring(name.length, c.length);
+    }
+    return "";
+}
+
+function fun(){
+	var mytoken = getCookie("token");
+	$.ajax({
+        type: "Post",
+        url: "/getData2",
+        contentType: "application/json",
+        headers: {'X-CSRF-TOKEN': mytoken},
+        success:function(result){
+        	output.innerHTML=result;
+        	$("#output").html(result.data.name);
+        }
+    })
+	
+	
+}
+	</script>
+
+</body>
+</html>
